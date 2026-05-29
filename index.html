@@ -34,7 +34,7 @@
   .hero {
     background: linear-gradient(180deg, var(--navy) 0%, var(--navy-2) 100%);
     color: #fff;
-    padding: 56px 24px 80px;
+    padding: 56px 24px 25px;
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -97,13 +97,13 @@
   }
   .contact p { margin: 0 0 18px; color: var(--ink-2); font-size: 15px; }
   .contact .row {
-    display: grid;
-    grid-template-columns: 1fr;
+    display: flex;
+    justify-content: center;
     gap: 12px;
   }
   .contact .row a {
-    display: flex; align-items: center; gap: 12px;
-    padding: 14px 16px;
+    display: inline-flex; align-items: center; justify-content: center; gap: 12px;
+    padding: 14px 24px;
     border: 1px solid var(--rule);
     border-radius: 12px;
     color: var(--ink);
