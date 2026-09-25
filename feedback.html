@@ -79,7 +79,7 @@
 
   .wrap { max-width: 720px; margin: 0 auto; padding: 0 24px; }
 
-  /* Form card — sits over hero/main boundary, matching index style */
+  /* Form card */
   .form-card {
     margin: 10px auto 56px;
     width: calc(100% - 40px);
@@ -293,11 +293,6 @@
       <p class="intro">Fill out the form below and we'll get back to you as soon as we can. Screenshots are optional but help us understand issues faster.</p>
 
       <form id="feedback-form" novalidate>
-        <!--
-          Web3Forms access key — replace YOUR_ACCESS_KEY_HERE with the key from
-          https://web3forms.com after you sign up. The destination inbox is
-          configured in the Web3Forms dashboard (tied to your access key).
-        -->
         <input type="hidden" name="access_key" value="dfc2be13-7f1b-4ae7-b605-78b2ea974e2b">
         <input type="hidden" name="subject" value="New feedback from Pet Food Calculator support page">
         <input type="hidden" name="from_name" value="Pet Food Calculator Support Form">
@@ -325,7 +320,8 @@
           <textarea id="message" name="message" required placeholder="Describe the issue, share an idea, or tell us what's working well…"></textarea>
         </div>
 
-        <div class="field">
+        <!-- ATTACHMENT SECTION — visibility controlled by ATTACHMENTS_ENABLED in the script below -->
+        <div class="field" id="attachment-section">
           <label>Screenshots <span style="font-weight:500;color:var(--ink-2);">(optional)</span></label>
           <div class="file-drop" id="file-drop">
             <input type="file" id="attachment" name="attachment" accept="image/*" multiple>
@@ -366,6 +362,18 @@
 
 <script>
   (function () {
+    // ─────────────────────────────────────────────
+    // ATTACHMENT TOGGLE
+    // Set to true  → screenshot upload field is visible (requires Web3Forms Pro)
+    // Set to false → screenshot upload field is hidden  (safe for free tier)
+    var ATTACHMENTS_ENABLED = false;
+    // ─────────────────────────────────────────────
+
+    var attachmentSection = document.getElementById('attachment-section');
+    if (!ATTACHMENTS_ENABLED) {
+      attachmentSection.style.display = 'none';
+    }
+
     var form = document.getElementById('feedback-form');
     var sendBtn = document.getElementById('send-btn');
     var statusEl = document.getElementById('status');
@@ -389,7 +397,7 @@
     }
     fileInput.addEventListener('change', renderFiles);
 
-    // Drag & drop visual feedback (the file input itself handles the drop natively)
+    // Drag & drop visual feedback
     ['dragenter', 'dragover'].forEach(function (evt) {
       fileDrop.addEventListener(evt, function (e) {
         e.preventDefault();
@@ -407,7 +415,6 @@
       statusEl.textContent = '';
       statusEl.className = 'status';
 
-      // Basic native validation
       if (!form.checkValidity()) {
         form.reportValidity();
         return;
@@ -418,6 +425,12 @@
 
       try {
         var formData = new FormData(form);
+
+        // If attachments are disabled, strip the file field before submitting
+        if (!ATTACHMENTS_ENABLED) {
+          formData.delete('attachment');
+        }
+
         var response = await fetch('https://api.web3forms.com/submit', {
           method: 'POST',
           body: formData
